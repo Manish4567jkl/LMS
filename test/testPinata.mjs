@@ -46,7 +46,7 @@ const getFromIPFS = async (cid) => {
 };
 
 const testPinata = async () => {
-  const filePath = './hello.txt'; 
+  const filePath = './Marksheets.pdf'; 
   const cid = await uploadToPinata(filePath);
 
   if (cid) {
