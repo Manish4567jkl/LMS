@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { FiUser, FiMail, FiPhone, FiBook, FiCalendar,FiArrowLeft } from "react-icons/fi";
 import useAuthStore from "../store/useAuthStore.js";
 import { toast } from "react-hot-toast";
-import Loader from "../components/Loader.jsx";
+import Loader from "./Loader.jsx";
 
 const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
