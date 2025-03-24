@@ -1,6 +1,6 @@
-import path from "path"
-import react from "@vitejs/plugin-react"
-import { defineConfig } from "vite"
+import path from "path";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [react()],
@@ -9,13 +9,16 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  define: {
+    global: "window", // Fix for Simple-Peer WebRTC
+  },
   server: {
     proxy: {
-      "api": {
+      "/api": {  // Fixed missing slash in "api"
         target: "http://localhost:4000",
         changeOrigin: true,
-        secure: false
+        secure: false,
       },
     },
   },
-})
+});

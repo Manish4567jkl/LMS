@@ -3,7 +3,6 @@ import { persist } from "zustand/middleware";
 import { api } from '../lib/utils';
 import { toast } from "react-hot-toast";
 
-
 const useAuthStore = create(
     persist(
         (set) => ({
@@ -12,8 +11,6 @@ const useAuthStore = create(
             loading: false,
             error: null,
             
-
-
             getProfile: async (id) => {
                 try {
                     set({ loading: true, error: null });
@@ -66,8 +63,10 @@ const useAuthStore = create(
             studentLogin: async (loginData) => {
                 try {
                     set({ loading: true, error: null });
-                    const response = await api.post('/v1/users/student/login', loginData);
-                    
+                    const response = await api.post('/v1/users/student/login', loginData, {
+                        withCredentials: true, // 🔥 Added to ensure CORS works
+                    });
+
                     const token = response.data.data.accessToken;
                     if (!token) {
                         throw new Error('No token received from server');
@@ -75,15 +74,15 @@ const useAuthStore = create(
 
                     localStorage.setItem('accessToken', token);
                     localStorage.setItem('userType', 'student');
-                    
+
                     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-                    
+
                     set({ 
                         user: response.data.data.user,
                         isAuthenticated: true,
                         loading: false 
                     });
-                    
+
                     return true;
                 } catch (error) {
                     console.error('Login error:', error);
@@ -98,8 +97,10 @@ const useAuthStore = create(
             teacherLogin: async (loginData) => {
                 try {
                     set({ loading: true, error: null });
-                    const response = await api.post('/v1/users/teacher/login', loginData);
-                    
+                    const response = await api.post('/v1/users/teacher/login', loginData, {
+                        withCredentials: true, // 🔥 Added to ensure CORS works
+                    });
+
                     const token = response.data.data.accessToken;
                     if (!token) {
                         throw new Error('No token received from server');
@@ -107,15 +108,15 @@ const useAuthStore = create(
 
                     localStorage.setItem('accessToken', token);
                     localStorage.setItem('userType', 'teacher');
-                    
+
                     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-                    
+
                     set({ 
                         user: response.data.data.user,
                         isAuthenticated: true,
                         loading: false 
                     });
-                    
+
                     return true;
                 } catch (error) {
                     console.error('Login error:', error);
@@ -130,17 +131,19 @@ const useAuthStore = create(
             studentSignup: async (signupData) => {
                 try {
                     set({ loading: true, error: null });
-                    const response = await api.post('/v1/users/student/signup', signupData);
-                    
+                    const response = await api.post('/v1/users/student/signup', signupData, {
+                        withCredentials: true, // 🔥 Ensuring CORS handles signup
+                    });
+
                     localStorage.setItem('accessToken', response.data.data.accessToken);
                     localStorage.setItem('userType', 'student');
-                    
+
                     set({ 
                         user: response.data.data,
                         isAuthenticated: true,
                         loading: false 
                     });
-                    
+
                     return true;
                 } catch (error) {
                     set({ 
@@ -154,17 +157,19 @@ const useAuthStore = create(
             teacherSignup: async (signupData) => {
                 try {
                     set({ loading: true, error: null });
-                    const response = await api.post('/v1/users/teacher/signup', signupData);
-                    
+                    const response = await api.post('/v1/users/teacher/signup', signupData, {
+                        withCredentials: true, // 🔥 Ensuring CORS handles signup
+                    });
+
                     localStorage.setItem('accessToken', response.data.data.accessToken);
                     localStorage.setItem('userType', 'teacher');
-                    
+
                     set({ 
                         user: response.data.data,
                         isAuthenticated: true,
                         loading: false 
                     });
-                    
+
                     return true;
                 } catch (error) {
                     set({ 
@@ -177,7 +182,7 @@ const useAuthStore = create(
 
             logout: async () => {
                 try {
-                    await api.post('/v1/users/logout');
+                    await api.post('/v1/users/logout', {}, { withCredentials: true });
                 } catch (error) {
                     console.error('Logout error:', error);
                 } finally {
@@ -201,9 +206,12 @@ const useAuthStore = create(
 
                 try {
                     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-                    
+
                     const userType = localStorage.getItem('userType');
-                    const response = await api.get(`/v1/users/${userType}/me`);
+                    const response = await api.get(`/v1/users/${userType}/me`, {
+                        withCredentials: true, // 🔥 Ensuring auth check works with CORS
+                    });
+
                     set({ 
                         user: response.data.data,
                         isAuthenticated: true 
@@ -218,7 +226,6 @@ const useAuthStore = create(
                     });
                 }
             },
-           
         }),
         {
             name: 'auth-storage',

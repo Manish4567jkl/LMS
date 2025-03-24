@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import StudentSidebar from "../components/StudentSidebar";
+import VideoCall from "../components/VideoCall"; // Import Video Call Component
 import useAuthStore from "../store/useAuthStore.js";
 import Loader from "../components/Loader.jsx";
 import { FiMenu, FiX } from "react-icons/fi";
@@ -9,6 +10,7 @@ const StudentDashboard = () => {
   const [userName, setUserName] = useState("");
   const [firstLetter, setFirstLetter] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isVideoCallOpen, setIsVideoCallOpen] = useState(false); // Video Call State
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -22,6 +24,10 @@ const StudentDashboard = () => {
     };
     fetchProfile();
   }, [user?._id, getProfile]);
+
+  const toggleVideoCall = () => {
+    setIsVideoCallOpen(!isVideoCallOpen);
+  };
 
   if (loading) {
     return (
@@ -49,7 +55,7 @@ const StudentDashboard = () => {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0`}
       >
-        <StudentSidebar />
+        <StudentSidebar onVideoCallToggle={toggleVideoCall} />
       </div>
 
       {/* Hamburger Menu */}
@@ -61,7 +67,11 @@ const StudentDashboard = () => {
       </button>
 
       {/* Main Content */}
-      <main className="flex-1 p-4 md:p-8 relative overflow-y-auto">
+      <main
+        className={`flex-1 p-4 md:p-8 relative overflow-y-auto transition ${
+          isVideoCallOpen ? "blur-lg pointer-events-none" : ""
+        }`}
+      >
         {/* Header */}
         <header className="bg-white bg-opacity-80 rounded-3xl shadow-lg p-6 md:p-8 mb-6 md:mb-8 border border-gray-200">
           <div className="flex flex-col md:flex-row justify-between items-center">
@@ -74,7 +84,6 @@ const StudentDashboard = () => {
               </p>
             </div>
             <div className="relative group mt-4 md:mt-0">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-full blur opacity-40 group-hover:opacity-80 transition duration-1000"></div>
               <div className="relative bg-white rounded-full p-1">
                 <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 flex items-center justify-center">
                   <span className="text-white text-xl md:text-2xl font-bold">
@@ -86,57 +95,21 @@ const StudentDashboard = () => {
           </div>
         </header>
 
-        {/* Dashboard Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-          {/* Academic Stats */}
-          <div className="bg-white bg-opacity-80 rounded-3xl shadow-md p-6 md:p-8 border border-gray-200 hover:shadow-xl transition-all duration-300">
-            <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-              <span className="p-2 bg-pink-100 rounded-lg">📚</span>
-              Academic Stats
-            </h2>
-            <div className="space-y-4 md:space-y-6">
-              <div className="flex items-center justify-between p-3 md:p-4 bg-gradient-to-r from-pink-50 to-purple-50 rounded-2xl">
-                <span className="text-gray-600">Program</span>
-                <span className="font-semibold text-purple-600">{user.program}</span>
-              </div>
-              <div className="flex items-center justify-between p-3 md:p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl">
-                <span className="text-gray-600">Duration</span>
-                <span className="font-semibold text-indigo-600">{user.yearJoined}</span>
-              </div>
-              <div className="flex items-center justify-between p-3 md:p-4 bg-gradient-to-r from-indigo-50 to-pink-50 rounded-2xl">
-                <span className="text-gray-600">Credits</span>
-                <span className="font-semibold text-pink-600">85/120</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Performance Card */}
-          <div className="relative group">
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-3xl blur opacity-30 group-hover:opacity-60 transition duration-1000"></div>
-            <div className="relative bg-white bg-opacity-80 rounded-3xl shadow-md p-6 md:p-8 border border-gray-200">
-              <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                <span className="p-2 bg-purple-100 rounded-lg">🎯</span>
-                Performance
-              </h2>
-              <div className="flex flex-col items-center justify-center space-y-3 md:space-y-4">
-                <div className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500">
-                  8.85
-                </div>
-                <div className="text-lg md:text-xl text-gray-500">Current CGPA</div>
-                <div className="w-full h-2 md:h-3 bg-gray-200 rounded-full mt-3 overflow-hidden">
-                  <div 
-                    className="h-full bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-full"
-                    style={{ width: "88.5%" }}
-                  ></div>
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* Other Dashboard Content */}
+        <div className="bg-white shadow-md rounded-lg p-6">
+          <h2 className="text-xl font-semibold">Your Courses</h2>
+          <p className="text-gray-600">Check out your enrolled courses here!</p>
         </div>
       </main>
+
+      {/* Full-Screen Video Call Overlay */}
+      {isVideoCallOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
+          <VideoCall onClose={toggleVideoCall} />
+        </div>
+      )}
     </div>
   );
 };
 
 export default StudentDashboard;
- 

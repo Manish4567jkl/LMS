@@ -3,11 +3,12 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ToastContainer } from "react-toastify";
 import useAuthStore from './store/useAuthStore';
 import ProtectedRoute from './components/ProtectedRoute';
-import Home from "./pages/Home"
-import StudentLoginSignup from "./pages/StudentLoginSignup"
-import TeacherLoginSignup from "./pages/TeacherLoginSignup"
-import StudentDashboard from "./pages/StudentDashboard"
-import TeacherDashboard from "./pages/TeacherDashboard"
+import Home from "./pages/Home";
+import StudentLoginSignup from "./pages/StudentLoginSignup";
+import TeacherLoginSignup from "./pages/TeacherLoginSignup";
+import StudentDashboard from "./pages/StudentDashboard";
+import TeacherDashboard from "./pages/TeacherDashboard";
+import VideoCall from "./components/VideoCall";  // ✅ Import Video Call Page
 
 function App() {
     const { checkAuth } = useAuthStore();
@@ -41,6 +42,9 @@ function App() {
                             </ProtectedRoute>
                         } 
                     />
+
+                    {/* ✅ Add the missing route for Video Call */}
+                    <Route path="/video-call" element={<VideoCall />} />  
                 </Routes>
             </Router>
             <ToastContainer position='top-center' />
